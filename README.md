@@ -10,10 +10,10 @@ FlavourFind uses Google ADK and MCP Toolbox for Databases to let users discover 
 ```
 User → ADK Agent (Cloud Run) → MCP Toolbox (Cloud Run) → BigQuery
                 ↓
-          Vertex AI (Gemini 2.0 Flash)
+          Vertex AI (Gemini 2.5 Flash)
 ```
 
-- **ADK Agent** — Gemini 2.0 Flash powered conversational agent
+- **ADK Agent** — Gemini 2.5 Flash powered conversational agent
 - **MCP Toolbox** — Self-hosted MCP server that exposes BigQuery as tools
 - **BigQuery** — `flavourfind.restaurants` table with 34,987 Yelp restaurant records
 
