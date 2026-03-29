@@ -1,0 +1,8 @@
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY toolbox .
+COPY tools.yaml .
+RUN chmod +x toolbox
+EXPOSE 5000
+CMD ["./toolbox", "--tools-file", "tools.yaml", "--address", "0.0.0.0"]
