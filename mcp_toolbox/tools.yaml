@@ -1,0 +1,73 @@
+sources:
+  flavourfind-bq:
+    kind: bigquery
+    project: flavourfind-491621
+
+tools:
+  search_by_cuisine_and_location:
+    kind: bigquery-sql
+    source: flavourfind-bq
+    description: >
+      Search for restaurants by cuisine type and city. Use this when the user
+      asks for a specific type of food or cuisine in a particular city or location.
+    parameters:
+      - name: cuisine
+        type: string
+        description: The cuisine or food type to search for (e.g. Italian, Sushi, Indian)
+      - name: city
+        type: string
+        description: The city to search in
+    statement: |
+      SELECT name, city, state, stars, review_count, categories, wifi_status
+      FROM `flavourfind-491621.flavourfind.restaurants`
+      WHERE LOWER(categories) LIKE LOWER(CONCAT('%', @cuisine, '%'))
+        AND LOWER(city) LIKE LOWER(CONCAT('%', @city, '%'))
+      ORDER BY stars DESC, review_count DESC
+      LIMIT 10
+
+  top_rated_restaurants:
+    kind: bigquery-sql
+    source: flavourfind-bq
+    description: >
+      Get the top rated restaurants in a city. Use this when the user asks for
+      the best restaurants, highest rated places, or top picks in a location.
+    parameters:
+      - name: city
+        type: string
+        description: The city to find top rated restaurants in
+    statement: |
+      SELECT name, city, state, stars, review_count, categories, wifi_status
+      FROM `flavourfind-491621.flavourfind.restaurants`
+      WHERE LOWER(city) LIKE LOWER(CONCAT('%', @city, '%'))
+        AND review_count >= 20
+      ORDER BY stars DESC, review_count DESC
+      LIMIT 10
+
+  search_with_wifi:
+    kind: bigquery-sql
+    source: flavourfind-bq
+    description: >
+      Find restaurants that offer free WiFi in a city, optionally filtered by
+      cuisine. Use this when the user asks about WiFi, wants to work from a
+      cafe, or needs internet access while dining.
+    parameters:
+      - name: city
+        type: string
+        description: The city to search in
+      - name: cuisine
+        type: string
+        description: Optional cuisine filter. Pass empty string if not specified.
+    statement: |
+      SELECT name, city, state, stars, review_count, categories, wifi_status
+      FROM `flavourfind-491621.flavourfind.restaurants`
+      WHERE LOWER(city) LIKE LOWER(CONCAT('%', @city, '%'))
+        AND wifi_status = 'free'
+        AND (LOWER(categories) LIKE LOWER(CONCAT('%', @cuisine, '%')) OR @cuisine = '')
+      ORDER BY stars DESC, review_count DESC
+      LIMIT 10
+
+toolsets:
+  flavourfind_toolset:
+    - search_by_cuisine_and_location
+    - top_rated_restaurants
+    - search_with_wifi
